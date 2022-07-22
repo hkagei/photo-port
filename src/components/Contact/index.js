@@ -1,17 +1,22 @@
 import React, { useState } from "react";
+
 import { validateEmail } from "../../utils/helpers";
 
 function ContactForm() {
-  const { name, email, message } = formState;
-  const [errorMessage, setErrorMessage] = useState("");
-  // JSX
+  const [formState, setFormState] = useState({ name: "", email: "", message: "", });
 
-  const [formState, setFormState] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-  function handleChange(e) {
+  const [errorMessage, setErrorMessage] = useState("");
+  const { name, email, message } = formState;
+  // JSX
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if(!errorMessage) {
+      setFormState({ [e.target.name]: e.target.value});
+      console.log('Form', formState);
+    }
+  };
+
+  const handleChange = (e) => {
     if (e.target.name === "email") {
       const isValid = validateEmail(e.target.value);
       console.log(isValid);
@@ -19,64 +24,39 @@ function ContactForm() {
       if (!isValid) {
         setErrorMessage("Your email is invalid.");
       } else {
-        if (!e.target.value.length) {
+        setErrorMessage('');
+      }
+    } else {
+      if (!e.target.value.length) {
           setErrorMessage(`${e.target.name} is required.`);
         } else {
           setErrorMessage("");
         }
       }
-      if (!errorMessage) {
-        setFormState({ ...formState, [e.target.name]: e.target.value });
-      }
-    }
-
-    setFormState({ ...formState, [e.target.name]: e.target.value });
-  }
-
-  console.log(formState);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    console.log(formState);
-  }
+    };
 
   return (
     <section>
-      <h1>Contact me</h1>
+      <h1 data-testid="h1tag">Contact me</h1>
       <form id="contact-form" onSubmit={handleSubmit}>
         <div>
           <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            defaultValue={name}
-            onChange={handleChange}
-            name="name"
-          />
+          <input type="text" name="name" defaultValue={name} onBlur={handleChange} />
         </div>
         <div>
           <label htmlFor="email">Email address:</label>
-          <input
-            type="email"
-            defaultValue={email}
-            name="email"
-            onChange={handleChange}
-          />
+          <input type="text" name="email" defaultValue={email} onBlur={handleChange} />
         </div>
         <div>
           <label htmlFor="message">Message:</label>
-          <textarea
-            name="message"
-            defaultValue={message}
-            onChange={handleChange}
-            rows="5"
-          />
-          {errorMessage && (
-            <div>
-              <p className="error-text">{errorMessage}</p>
-            </div>
-          )}
+          <textarea type="text" rows="5" defaultValue={message} onBlur={handleChange} />
         </div>
-        <button type="submit">Submit</button>
+        {errorMessage && (
+          <div>
+            <p className="error-text">{errorMessage}</p>
+          </div>
+        )}
+        <button data-testid="button" type="submit">Submit</button>
       </form>
     </section>
   );
